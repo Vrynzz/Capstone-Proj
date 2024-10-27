@@ -66,7 +66,7 @@ st.subheader("Repository")
 
 st.markdown(
     """
-    You can find the source code for this project on GitHub: https://github.com/Vrynzz/CapstoneProj
+    You can find the source code for this project on GitHub: https://github.com/Vrynzz/Capstone-Proj
     """
     )
 
