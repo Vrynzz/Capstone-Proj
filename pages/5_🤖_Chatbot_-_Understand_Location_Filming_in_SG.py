@@ -1,13 +1,11 @@
 import streamlit as st
 from langchain_community.document_loaders import PyPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings, OpenAI
 from langchain_community.vectorstores import FAISS
-from langchain_community.llms import OpenAI
 from langchain.chains.question_answering import load_qa_chain
 from langchain_community.callbacks.manager import get_openai_callback
 from helper_functions.utility import check_password 
-
 
 import os
 from dotenv import load_dotenv
@@ -66,18 +64,25 @@ if form.form_submit_button("Submit"):
 
 if user_prompt:
         docs = knowledge_base.similarity_search(user_prompt)
-        
+
+        system_prompt = (
+            "You are an assistant for question-answering tasks."
+            "Always provide answers based on the provided context."
+            "If you don't know the answer, just say that you don't know, don't try to make up an answer."
+            "Always end with 'If you require more information, please contact SFC@IMDA.gov.sg' "
+        )
+
+        full_prompt = f"{system_prompt}\n\nQuestion: {user_prompt}"
+
         chain = load_qa_chain(llm, chain_type="stuff")
         
         with get_openai_callback() as cb:
-          response = chain.run(input_documents=docs, question=user_prompt)
+          response = chain.run(input_documents=docs, question=full_prompt)
           print(cb)
            
         st.write(response)
 
-
         st.divider()
-
 
 with st.expander("Disclaimer"):
     st.write('''
